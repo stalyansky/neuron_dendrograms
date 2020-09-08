@@ -77,9 +77,6 @@ class Dendrogram:
 #     plt.close()
 
 
-    ####constructor
-    # nrn is meshwork
-    # mode = 0 for dendrogram with nodes connected by straight lines or 1 for dendrogram with nodes connected by horizontal and vertical segments
     def __init__(self, nrn, mode):
         self.nrn = nrn
         self.mode = mode
@@ -93,7 +90,16 @@ class Dendrogram:
         self.y_vals = np.zeros(self.branch_and_end_points.size)
         self.hier_codes = [[]]*self.branch_and_end_points.size
         self._compute_lines()
-    
+    '''constructs dendrogram
+
+
+        Parameters
+        ----------
+        nrn : meshparty.meshwork
+            neuron meshwork
+        mode : int
+            0 for dendrogram with nodes connected by straight lines or 1 for dendrogram with nodes connected by horizontal and vertical segments
+    '''
     ####_compute_lines: helper function run automatically during initialization
     #computes node codes and heights and coordinates of points forming connecting line segments
     def _compute_lines(self):
@@ -121,15 +127,7 @@ class Dendrogram:
                 ds_node_index = int(self.nrn.jump_distal(self.nrn.SkeletonIndex(child)).to_skel_index)
                 self.compute_hierarchy(ds_node_index, hier+[c+1])
         return
-        
 
-    ####compute_dendrogram (for calling): determine dendrogram coordinates of nodes (root, branch and end-points), connecting line segments, and given objects (e.g. synapses)
-    ###inputs
-    # df is dataframe from meshwork with mesh indices of objects (e.g. synapses). Set to None if only node and line coordinates should be computed
-    ###outputs
-    # node_coords has (x_coords, y_coords, codes) format, where x_coords is an array of the x-coordinates of the nodes, y_coords is an array of the y-coordinates of the nodes, and codes is an array of the lists representing the nodes' positions in their hierarchy
-    # lines is coordinates of points constituting segments connecting nodes (by default 20 points per segment) - it is a list of (x_coords, y_coords) tuples, one for each line segment, where x_coords is an array of the x-coordinates of the points forming that line segment and y_coords is an array of the y-coordinates of the points forming that line segment
-    # obj_coords has format (x_coords, y_coords), where x_coords is an array of the dendrogram x-coordinates of the objects described by df and y_coords is an array of the dendrogram y-coordinates of the objects described by df (if df is not None; otherwise, x_coords and y_coords are empty arrays)
     def compute_dendrogram(self, df):
         if self.branch_and_end_points.size < 2:
             print("No branch points in skeleton.")
@@ -141,7 +139,24 @@ class Dendrogram:
         else:
             obj_coords = (np.array([]), np.array([]))
         return (node_coords, self.lines, obj_coords)
+        '''determine dendrogram coordinates of nodes (root, branch and end-points), connecting line segments, and given objects (e.g. synapses)
 
+
+        Parameters
+        ----------
+        df : pandas.dataFrame or None
+            dataframe from meshwork with mesh indices of objects (e.g. synapses). Set to None if only node and line coordinates should be computed
+
+        Returns
+        -------
+        node_coords : tuple
+            has format (x_coords, y_coords, codes), where x_coords is an array of the x-coordinates of the nodes, y_coords is an array of the y-coordinates of the nodes, and codes is an array of the lists representing the nodes' positions in their hierarchy
+        lines : list
+            list of (x_coords, y_coords) tuples, one for each line segment, where x_coords is an array of the x-coordinates of the points forming that line segment and y_coords is an array of the y-coordinates of the points forming that line segment
+        obj_coords : tuple
+            has format (x_coords, y_coords), where x_coords is an array of the dendrogram x-coordinates of the objects described by df and y_coords is an array of the dendrogram y-coordinates of the objects described by df (if df is not None; otherwise, x_coords and y_coords are empty arrays)
+        '''
+        
     ####set_height_inv: helper function run automatically during initialization
     #determines height of root, branch, and end points in dendrogram
     def set_height_inv(self, node_index):
@@ -235,19 +250,6 @@ class Dendrogram:
                     self.create_lines(nearest_ds_key_pt, new_last_critical_node)
         return
 
-    ####find_dendrogram_locations (for calling): determine dendrogram coordinates of given objects (e.g. synapses)
-    ###inputs
-    # nrn is meshwork
-    # df is dataframe of objects
-    # meshwork dataframe with mesh indices of objects (e.g. synapses)
-    # y_vals is array of y-coordinates of branch and end–points on dendrogram (i.e. node_coords[1])
-    # measure_post_distance is boolean: true if one wishes to compute for each output its distance from the post-synaptic root
-    ###outputs (all are the same length and the i-th element of each corresponds to the synapse in row i of df)
-    # x_coords is array of dendrogram x-coordinates of objects as distances in nm from pre-synaptic root
-    # y_coords is array of dendrogram y-coordinates of objects (y-coordinates are arbitrary)
-    # x_coords1 is array of distances of objects from post-synaptic root
-    # opposite_ids is array in string format of cell IDs of presynaptic cells if df is a dataframe of synaptic outputs or postsynaptic cells if df is a dataframe of synaptic inputs (opposite_ids is returned as a string to preserve full ID when object is saved later; to recover integer IDs, run opposite_ids = np.fromstring(opposite_ids,dtype=int) )
-    # syn_ids is array of IDs of synapses in df
     def find_dendrogram_locations(self, nrn, df, y_vals, measure_post_distance):
         skd = self.skd
         mode = self.mode
@@ -322,19 +324,33 @@ class Dendrogram:
         else:
             opposite_ids = df.post_pt_root_id.values.tostring()
         return (x_coords, y_coords, x_coords1, opposite_ids, syn_ids)
+        '''determine dendrogram coordinates of given objects (e.g. synapses). All outputs are the same length and the i-th element of each corresponds to the synapse in row i of df
 
-    ####categorize_synaptic_outputs (for calling): categorize output synapses into unknown, inhibitory, and excitatory-soma and excitatory-dendrite targets
-    ###inputs
-    # nrn is meshwork
-    # syn_out_df is dataframe of output synapses (i.e. nrn.anno.syn_out.df)
-    # soma_df is dataframe with information about neurons in soma subgraph (i.e. cell type and soma centroid coordinates); for Pinky, this is soma_valence_v185.csv (https://microns-explorer.org/phase1)
-    # y_vals is y-coordinates of branch and end–points on dendrogram (i.e. node_coords[1])
-    # measure_post_distance is boolean: true if one wishes to compute the distance from post-synaptic root of each output
-    ###outputs (all are in (x_coords, y_coords, x_coords1, opposite_ids, syn_ids) format --- see find_dendrogram_locations for full explanation)
-    # syn_out_unk_coords is information about synaptic outputs to cells beyond soma subgraph
-    # syn_out_inh_coords is information about synaptic outputs to inhibitory cells
-    # syn_out_dend_coords is information about synaptic outputs to dendrites of excitatory cells (outputs more than 15 um from target root)
-    # syn_out_soma_coords is information about synaptic outputs to somata of excitatory cells (outputs within 15 um of target root)
+        Parameters
+        ----------
+        nrn : meshparty.meshwork
+            neuron meshwork
+        df : pandas.dataFrame
+            information about objects
+        y_vals : numpy.array
+            y-coordinates of root, branch, and end points on dendrogram (i.e. node_coords[1])
+        measure_post_distance : bool
+            true if one wishes to compute for each output its distance from the post-synaptic root
+
+        Returns
+        -------
+        x_coords : np.array
+            dendrogram x-coordinates of objects as geodesic distances in nm from pre-synaptic root
+        y_coords : np.array
+            dendrogram y-coordinates of root, branch, and end points on dendrogram (i.e. node_coords[1])
+        x_coords1 : np.array
+            geodesic distances of objects from post-synaptic root in nm
+        opposite_ids : str
+            array (in string format) of cell IDs of presynaptic cells if df is a dataframe of synaptic outputs or postsynaptic cells if df is a dataframe of synaptic inputs (opposite_ids is returned as a string to preserve full ID when object is saved later; to recover integer IDs, run opposite_ids = np.fromstring(opposite_ids,dtype=int) )
+        syn_ids : np.array
+            IDs of synapses in df
+        '''
+    
     def categorize_synaptic_outputs(self, nrn, syn_out_df, soma_df, y_vals, measure_post_distance):
         soma_dend_thresh = 15000 #the Euclidean distance from root in nm that divides somatic objects from dendritic objects
         vx_to_nm = [4, 4, 40] #the voxel to nm conversion for Pinky
@@ -368,3 +384,29 @@ class Dendrogram:
             syn_out_dend_coords = (np.array([]), np.array([]), np.array([]), '', np.array([]))
             syn_out_soma_coords = (np.array([]), np.array([]), np.array([]), '', np.array([]))
         return (syn_out_unk_coords, syn_out_inh_coords, syn_out_dend_coords, syn_out_soma_coords)
+        '''categorize output synapses into unknown, inhibitory, and excitatory-soma and excitatory-dendrite targets. All outputs have (x_coords, y_coords, x_coords1, opposite_ids, syn_ids) format --- see find_dendrogram_locations for full explanation)
+
+        Parameters
+        ----------
+        nrn : meshparty.meshwork
+            neuron meshwork
+        syn_out_df : pandas.dataFrame
+            information about neuron output synapses (e.g. nrn.anno.syn_out.df)
+        soma_df : pandas.dataFrame
+            information about neurons in soma subgraph (i.e. cell type and soma centroid coordinates); for Pinky, this is soma_valence_v185.csv (https://microns-explorer.org/phase1)    
+        y_vals : numpy.array
+            y-coordinates of root, branch, and end points on dendrogram (i.e. node_coords[1])
+        measure_post_distance : bool
+            true if one wishes to compute for each output its distance from the post-synaptic root
+
+        Returns
+        -------
+        syn_out_unk_coords : tuple
+            information about synaptic outputs to cells beyond soma subgraph
+        syn_out_inh_coords : tuple
+            information about synaptic outputs to inhibitory cells
+        syn_out_dend_coords : tuple
+            information about synaptic outputs to dendrites of excitatory cells (outputs more than 15 um from target root in terms of Euclidean distance)
+        syn_out_soma_coords : tuple
+            synaptic outputs to somata of excitatory cells (outputs within 15 um of target root)
+        '''
