@@ -9,8 +9,9 @@ from meshparty import meshwork
 class Dendrogram:
 
     ###Sample usage:
+#     import dendrogram
 #     nrn = meshwork.load_meshwork(filename=path) #define path to meshwork file
-#     dg = Dendrogram(nrn, 1)
+#     dg = dendrogram.Dendrogram(nrn, 1)
 #     (node_coords, lines, syn_in_coords) = dg.compute_dendrogram(nrn.anno.syn_in.df) 
 #     syn_out_unk_coords, syn_out_inh_coords, syn_out_dend_coords, syn_out_soma_coords = dg.categorize_synaptic_outputs(nrn, nrn.anno.syn_out.df, soma_df, node_coords[1], True)
   
