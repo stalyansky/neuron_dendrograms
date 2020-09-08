@@ -1,6 +1,6 @@
 ###dendrogram module
 ##written by Seth Talyansky (sethtal@stanford.edu) and edited by Casey Schneider-Mizell
-##Tool for neural arbor visualization. In the diagrams (dendrograms), geodesic distance from root (path length) in um is plotted on the x-axis. The y-values are arbitrary (they only carry illustrative purpose). Synapses within 15 um (Euclidean distance) of root are considered somatic and not shown (accurately, at least — they are all plotted at the root, the thick point at x=0).
+##Tool for neural arbor visualization. In the diagrams (dendrograms), geodesic distance from root (path length) in um is plotted on the x-axis. The y-values are arbitrary (they only carry illustrative purpose). Synapses within 15 um (Euclidean distance, not geodesic) of root (soma centroid) are considered somatic and not shown (accurately, at least — they are all plotted at the root, the thick point at x=0).
 
 import numpy as np
 import pandas as pd
