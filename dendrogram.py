@@ -53,10 +53,10 @@ class Dendrogram:
 #         ax.plot(line[0]/1000, line[1], color='black', linewidth=0.2, zorder=5)
 #     #plotting synapses
 #     ax.scatter(syn_in_coords[0]/1000, syn_in_coords[1], color='red', marker='.', s=0.005, label='inputs')   
-#     ax.scatter(syn_out_unk_coords[0]/1000, syn_out_unk_coords[1], color='slategray', edgecolor='', s=1.2, label='outputs to non-SS cells', zorder=10) #plotting synapses
-#     ax.scatter(syn_out_inh_coords[0]/1000, syn_out_inh_coords[1], color='orange', edgecolor='', s=1.2, label='outputs to inh. cells', zorder=10) #plotting synapses
-#     ax.scatter(syn_out_soma_coords[0]/1000, syn_out_soma_coords[1], color='darkblue', edgecolor='', s=1.2, label='outputs to soma of exc. cells', zorder=10) #plotting synapses
-#     ax.scatter(syn_out_dend_coords[0]/1000, syn_out_dend_coords[1], color='darkseagreen', edgecolor='', s=1.2, label='outputs to dend. of exc. cells', zorder=10) #plotting synapses
+#     ax.scatter(syn_out_unk_coords[0]/1000, syn_out_unk_coords[1], color='slategray', edgecolor='', s=1.2, label='outputs to non-SS cells', zorder=10)
+#     ax.scatter(syn_out_inh_coords[0]/1000, syn_out_inh_coords[1], color='orange', edgecolor='', s=1.2, label='outputs to inh. cells', zorder=10)
+#     ax.scatter(syn_out_soma_coords[0]/1000, syn_out_soma_coords[1], color='darkblue', edgecolor='', s=1.2, label='outputs to soma of exc. cells', zorder=10)
+#     ax.scatter(syn_out_dend_coords[0]/1000, syn_out_dend_coords[1], color='darkseagreen', edgecolor='', s=1.2, label='outputs to dend. of exc. cells', zorder=10)
 #     ax.set_xlabel('Distance from root (um)')
 #     ax.axes.yaxis.set_visible(False)
 #     ax.set_title('Dendrogram of cell ' + str(cell_id))
