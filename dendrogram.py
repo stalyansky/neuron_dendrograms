@@ -1,5 +1,6 @@
 ###dendrogram module
 ##written by Seth Talyansky (sethtal@stanford.edu) and edited by Casey Schneider-Mizell
+##Tool for neural arbor visualization. In the diagrams (dendrograms), geodesic distance from root (path length) in um is plotted on the x-axis. The y-values are arbitrary (they only carry illustrative purpose). Synapses within 15 um (Euclidean distance) of root are considered somatic and not shown (accurately, at least — they are all plotted at the root, the thick point at x=0).
 
 import numpy as np
 import pandas as pd
@@ -241,8 +242,8 @@ class Dendrogram:
     # y_vals is array of y-coordinates of branch and end–points on dendrogram (i.e. node_coords[1])
     # measure_post_distance is boolean: true if one wishes to compute for each output its distance from the post-synaptic root
     ###outputs (all are the same length and the i-th element of each corresponds to the synapse in row i of df)
-    # x_coords is array of dendrogram x-coordinates of objects as distance from pre-synaptic root
-    # y_coords is array of dendrogram y-coordinates of objects
+    # x_coords is array of dendrogram x-coordinates of objects as distances in nm from pre-synaptic root
+    # y_coords is array of dendrogram y-coordinates of objects (y-coordinates are arbitrary)
     # x_coords1 is array of distances of objects from post-synaptic root
     # opposite_ids is array in string format of cell IDs of presynaptic cells if df is a dataframe of synaptic outputs or postsynaptic cells if df is a dataframe of synaptic inputs (opposite_ids is returned as a string to preserve full ID when object is saved later; to recover integer IDs, run opposite_ids = np.fromstring(opposite_ids,dtype=int) )
     # syn_ids is array of IDs of synapses in df
